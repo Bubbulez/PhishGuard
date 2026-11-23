@@ -1,4 +1,4 @@
-# PhishGuard — Team 6, Computer Security
+# PhishGuard - Team 6, Computer Security
 
 A Chrome & Firefox extension that checks every site you visit and warns you about phishing in real time.
 It's built from the Team 6 proposal deck (architecture, tech stack, and 0–100 scoring), and its screens follow the Figma frames.
@@ -38,7 +38,7 @@ node server.js              # → http://localhost:8787
 
 Open the extension's **Options** page and click **Save**. It checks `/health` and lists which services are live. When the backend is connected, the popup shows **● live intel**.
 
-## How scoring works (matches slide 07)
+## How scoring works
 
 | Group | Signals | Points |
 |---|---|---|
