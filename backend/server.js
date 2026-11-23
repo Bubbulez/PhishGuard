@@ -46,6 +46,7 @@ async function safeBrowsing(url) {
   if (!GSB_KEY) return null;
   const res = await fetch(`https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${GSB_KEY}`, {
     method: "POST",
+    signal: AbortSignal.timeout(4500),
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       client: { clientId: "phishguard-kean", clientVersion: "1.0.0" },
@@ -66,7 +67,10 @@ async function safeBrowsing(url) {
 async function virusTotal(url) {
   if (!VT_KEY) return null;
   const id = Buffer.from(url).toString("base64url");
-  const res = await vtQueue(() => fetch(`https://www.virustotal.com/api/v3/urls/${id}`, { headers: { "x-apikey": VT_KEY } }));
+  const res = await vtQueue(() => fetch(`https://www.virustotal.com/api/v3/urls/${id}`, {
+    headers: { "x-apikey": VT_KEY },
+    signal: AbortSignal.timeout(3500),
+  }));
   if (res.status === 404) return { malicious: 0, suspicious: 0, known: false };
   if (!res.ok) throw new Error(`VirusTotal HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
   const s = (await res.json()).data?.attributes?.last_analysis_stats ?? {};
@@ -135,7 +139,7 @@ async function check(url) {
     safe("safeBrowsing", cached(`gsb:${url}`, () => safeBrowsing(url))),
     safe("virusTotal", cached(`vt:${url}`, () => virusTotal(url)), 4000), // don't block on the queue
     safe("rdap", cached(`rdap:${domain}`, () => domainAgeDays(domain), 24 * 3600 * 1000)),
-    u.protocol === "https:" ? safe("cert", cached(`cert:${u.hostname}`, () => certAgeDays(u.hostname), 6 * 3600 * 1000)) : null,
+    Promise.resolve(null), // Direct TLS lookup disabled for SSRF protection
   ]);
   return {
     url,
@@ -151,7 +155,7 @@ async function check(url) {
 const PER_IP_PER_MIN = Number(process.env.PER_IP_PER_MIN || 60);
 const hits = new Map(); // ip -> { count, windowStart }
 function overLimit(req) {
-  const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+  const ip = req.socket.remoteAddress || "unknown";
   const now = Date.now();
   const h = hits.get(ip);
   if (!h || now - h.windowStart > 60000) { hits.set(ip, { count: 1, windowStart: now }); return false; }
@@ -162,7 +166,9 @@ setInterval(() => { const cut = Date.now() - 120000; for (const [ip, h] of hits)
 // ---------- HTTP server ----------
 const server = http.createServer(async (req, res) => {
   const origin = req.headers.origin || "";
-  const allowed = /^(chrome|moz)-extension:\/\//.test(origin) || origin.startsWith("http://localhost");
+  const allowed =
+    /^(chrome|moz)-extension:\/\/[a-z0-9-]+$/i.test(origin) ||
+    /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
   res.setHeader("Access-Control-Allow-Origin", allowed ? origin : "null");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");

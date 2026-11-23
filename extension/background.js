@@ -36,7 +36,19 @@ async function remoteLookup(url, domain) {
       const res = await fetch(`${backendUrl.replace(/\/$/, "")}/check`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+
+        // URL privacy: remove sensitive information before backend transmission.
+        body: JSON.stringify({
+          url: (() => {
+            const sanitized = new URL(url);
+            sanitized.username = "";
+            sanitized.password = "";
+            sanitized.search = "";
+            sanitized.hash = "";
+            return sanitized.href;
+          })(),
+        }),
+
         signal: AbortSignal.timeout(6000),
       });
       if (res.ok) data = { ...(await res.json()), backend: "online" };
