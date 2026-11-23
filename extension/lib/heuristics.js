@@ -138,7 +138,7 @@ export function urlHeuristics(rawUrl) {
 
   if (host.includes("xn--")) add(30, "punycode", "The address uses look-alike international characters");
   if (isIp(host)) add(30, "raw-ip", "The address is a raw IP number instead of a name");
-  if (u.username || rawUrl.split("?")[0].includes("@")) add(25, "at-sign", "The address hides its real destination after an @");
+  if (u.username || u.password) add(25, "at-sign", "The address hides its real destination after an @");
   if (u.protocol === "http:") add(10, "no-https", "The connection isn't encrypted");
   if (RISKY_TLDS.has(tld)) add(10, "risky-tld", `Ends in .${tld}, a domain ending often used for scams`);
   if (host.split(".").length >= 5) add(10, "deep-subdomain", "Unusually long chain of subdomains");

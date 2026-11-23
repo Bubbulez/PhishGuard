@@ -5,6 +5,9 @@
     "facebook", "instagram", "netflix", "linkedin", "dropbox", "docusign", "coinbase",
     "wellsfargo", "bankofamerica"];
 
+  // Respect the user's protection setting.
+  let enabled = false;
+
   const baseDomain = (host) => {
     const p = host.toLowerCase().split(".");
     const two = p.slice(-2).join(".");
@@ -32,15 +35,17 @@
 
   let last = "";
   function report() {
+    if (!enabled) return;
+
     const signals = collectSignals();
     const key = JSON.stringify(signals);
     if (key === last) return;
     last = key;
     chrome.runtime.sendMessage({ type: "pageSignals", signals }).catch(() => {});
   }
-  report();
+
   // Login forms are often injected after load.
-  new MutationObserver(debounce(report, 800)).observe(document.documentElement, { childList: true, subtree: true });
+  const observer = new MutationObserver(debounce(report, 800));
 
   // ---------- Link hover warnings ----------
   const tip = document.createElement("div");
@@ -50,7 +55,43 @@
   document.documentElement.appendChild(tip);
   const cache = new Map();
 
+  // Pause or resume webpage scanning.
+  function updateProtection(value) {
+    enabled = value;
+    last = "";
+    cache.clear();
+    tip.hidden = true;
+    observer.disconnect();
+
+    if (enabled) {
+      report();
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+      });
+    }
+  }
+
+  // Listen for changes to the protection toggle.
+  let settingChanged = false;
+
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "sync" && changes.enabled) {
+      settingChanged = true;
+      updateProtection(changes.enabled.newValue ?? true);
+    }
+  });
+
+  // Load the saved protection setting.
+  chrome.storage.sync.get({ enabled: true }).then((settings) => {
+    if (!settingChanged) updateProtection(settings.enabled);
+  }).catch(() => {
+    // Keep scanning disabled if settings cannot be loaded.
+  });
+
   document.addEventListener("mouseover", async (e) => {
+    if (!enabled) return;
+
     const a = e.target.closest?.("a[href]");
     if (!a) return;
     let url;
@@ -65,6 +106,10 @@
     if (!cache.has(a.href)) {
       cache.set(a.href, await chrome.runtime.sendMessage({ type: "scoreLink", url: a.href }).catch(() => null));
     }
+
+    // Protection may have been disabled during the lookup.
+    if (!enabled) return;
+
     const res = cache.get(a.href);
     const risky = mismatchText || (res && res.score >= 30);
     if (!risky) return;
