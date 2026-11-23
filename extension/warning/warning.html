@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>PhishGuard — Security warning</title>
+  <link rel="stylesheet" href="../lib/theme.css">
+  <link rel="stylesheet" href="warning.css">
+</head>
+<body>
+  <header><img src="../icons/outline-white.svg" alt="" width="20" height="20"> PhishGuard</header>
+  <main>
+    <div class="tag">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg>
+      <span>DANGER · SUSPECTED PHISHING</span>
+    </div>
+    <h1>This page may be trying to steal your information</h1>
+    <p id="lede">PhishGuard thinks this site is dangerous.</p>
+    <ul id="reasons"></ul>
+    <p class="addr">Address: <code id="addr"></code> · Risk score <code id="score"></code>/100</p>
+    <button id="back">← Back to safety</button>
+    <a href="#" id="continue">Continue anyway (not recommended)</a>
+  </main>
+  <script type="module" src="warning.js"></script>
+</body>
+</html>

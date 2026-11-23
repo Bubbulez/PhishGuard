@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "PhishGuard",
+  "version": "1.0.0",
+  "description": "Real-time phishing protection: checks every site against known-bad lists, URL heuristics, domain age and page signals.",
+  "icons": { "16": "icons/safe-16.png", "32": "icons/safe-32.png", "48": "icons/safe-48.png", "128": "icons/safe-128.png" },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "PhishGuard",
+    "default_icon": { "16": "icons/safe-16.png", "32": "icons/safe-32.png" }
+  },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "content_scripts": [{
+    "matches": ["http://*/*", "https://*/*"],
+    "js": ["content/content.js"],
+    "css": ["content/content.css"],
+    "run_at": "document_idle",
+    "all_frames": false
+  }],
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "options_page": "options/options.html",
+  "web_accessible_resources": []
+}

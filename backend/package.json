@@ -1,0 +1,9 @@
+{
+  "name": "phishguard-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PhishGuard threat-intel proxy: Safe Browsing, VirusTotal, OpenPhish, RDAP",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}

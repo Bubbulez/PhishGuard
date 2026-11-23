@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>PhishGuard settings</title>
+<link rel="stylesheet" href="../lib/theme.css">
+<style>
+  body { background: var(--bg); padding: 32px; max-width: 560px; }
+  h1 { font: 600 22px var(--display); }
+  label { display: block; font-weight: 600; margin: 18px 0 6px; font-size: 14px; }
+  input[type=url] { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; font: 14px var(--mono); }
+  p { color: var(--muted); font-size: 13px; }
+  button { margin-top: 14px; background: var(--ink); color: #fff; border: 0; border-radius: 8px; padding: 9px 16px; font-weight: 600; cursor: pointer; }
+  #status { margin-left: 10px; font-size: 13px; }
+</style></head>
+<body>
+  <h1>PhishGuard settings</h1>
+  <label for="backendUrl">Backend URL</label>
+  <input type="url" id="backendUrl" placeholder="https://your-backend.onrender.com">
+  <p>The Node.js backend holds the API keys and checks Google Safe Browsing, VirusTotal and OpenPhish. Leave blank to use local heuristics and RDAP domain age only.</p>
+  <label><input type="checkbox" id="enabled"> Protection on</label>
+  <button id="save">Save</button><span id="status"></span>
+  <script type="module" src="options.js"></script>
+</body></html>

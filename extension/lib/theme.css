@@ -1,0 +1,8 @@
+:root {
+  --bg: #F4F2ED; --card: #FFFFFF; --ink: #15181E; --muted: #6B6F78; --line: #E7E4DD;
+  --safe: #4677C9; --caution: #D9A53A; --danger: #B5472F; --off: #8A8F98;
+  --note: #FDF3D8; --display: "Space Grotesk", "Segoe UI", -apple-system, Inter, sans-serif;
+  --body: -apple-system, "Segoe UI", Inter, Roboto, sans-serif; --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--body); color: var(--ink); }

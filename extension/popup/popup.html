@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../lib/theme.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="../icons/outline.svg" alt="" width="20" height="20">
+    <span class="brand">PhishGuard</span>
+    <label class="switch" title="Turn protection on or off">
+      <input type="checkbox" id="enabled" checked><span></span>
+    </label>
+  </header>
+
+  <section id="banner" class="banner safe">
+    <div class="eyebrow"><span id="eyeIcon"></span><span id="eyebrow">SAFE</span></div>
+    <div class="headline" id="headline">Looks safe</div>
+    <div class="score"><span id="score">0</span>/100 risk</div>
+  </section>
+
+  <dl class="rows">
+    <div><dt>Site:</dt><dd id="site" class="mono">—</dd></div>
+    <div><dt>Connection:</dt><dd id="conn">—</dd></div>
+    <div><dt>Reported as phishing:</dt><dd id="reported">—</dd></div>
+  </dl>
+
+  <ul id="notes" class="notes"></ul>
+
+  <footer>
+    <a href="#" id="report">Report this site</a>
+    <span id="backend" class="backend"></span>
+  </footer>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

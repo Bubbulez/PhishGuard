@@ -1,0 +1,1 @@
+{ "name": "phishguard", "private": true, "type": "module", "scripts": { "test": "node --test test/*.test.mjs", "backend": "node backend/server.js" } }
